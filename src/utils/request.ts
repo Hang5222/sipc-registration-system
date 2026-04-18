@@ -32,7 +32,7 @@ request.interceptors.response.use(
 
     // res.code业务状态码判断
     // 成功
-    if (res.code === '200') {
+    if (res.code === '200' || res.code === 200) {
       return res
     }
     // 失败

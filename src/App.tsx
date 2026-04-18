@@ -4,9 +4,10 @@ import AdminLogin from './pages/AdminLogin'
 import SubmitForm from './pages/SubmitForm'
 
 // 引入工具
+import React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
-function App() {
+const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
