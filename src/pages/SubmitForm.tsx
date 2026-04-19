@@ -37,6 +37,7 @@ const SubmitForm: React.FC = () => {
         isDispensing: values.isDispensing,
       };
       console.log('即将发送给后端的 Payload:', payload);
+      
       // 提交表单
       await submitForm(payload);
 
@@ -56,7 +57,7 @@ const SubmitForm: React.FC = () => {
 
   return (
     <div className='flex justify-center py-4 min-h-screen bg-[#f0f2f5]'>
-      <Card title='学生组织报名系统' style={{ width: 700, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+      <Card title='学生组织报名系统' style={{ width: 700, textAlign: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
         <Form
           form={form}
           layout="vertical"
@@ -103,7 +104,7 @@ const SubmitForm: React.FC = () => {
           </Card>
 
           {/* 是否调剂 */}
-          <Form.Item label="是否服从调剂" name="isDispensing" rules={[{ required: true, message: '请选择是否调剂!' }]}>
+          <Form.Item label="是否服从调剂" name="isDispensing" rules={[{ required: true, message: '请选择是否调剂!' }]} style={{ textAlign: 'left' }}>
             <Radio.Group>
               <Radio value={true}>是</Radio>
               <Radio value={false}>否</Radio>
@@ -111,7 +112,7 @@ const SubmitForm: React.FC = () => {
           </Form.Item>
 
           {/* 提交按钮 */}
-          <Form.Item style={{ textAlign: 'center' }}>
+          <Form.Item>
             <Button type="primary" htmlType="submit" loading={loading} disabled={loading} size="large" block>
               提交
             </Button>
