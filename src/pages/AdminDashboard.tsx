@@ -1,16 +1,17 @@
-import { fetchRegistrationForms } from '../api/admin';
+import { fetchRegistrationForms, deleteRegistrationForm, searchRegistrationForms } from '../api/admin';
 import type { RegistrationRecord } from '../api/admin';
 
 import React, { useState, useEffect } from 'react';
-import { Layout, Menu, Button, Table, Modal, message } from 'antd';
+import { Layout, Menu, Button, Table, Modal, message, Space, Input } from 'antd';
 import type { ColumnsType } from 'antd/es/table'; // 引入 ColumnsType 类型，定义表格列的类型
 import { UserOutlined, LogoutOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
-
-
 const { Header, Sider, Content } = Layout;
 const { confirm } = Modal;
+const { Search } = Input;
+
+
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -22,9 +23,12 @@ const AdminDashboard: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const[pageSize, setPageSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
+  // 搜索状态管理
+  const [searchKeyword, setSearchKeyword] = useState('');
 
   // 定义表格的列
-  const columns: ColumnsType<RegistrationRecord> =[
+  const columns: ColumnsType<RegistrationRecord> = [
+    // dataIndex 是从 RegistrationRecord 中获取数据的字段名(与数据库字段名一致)
     { title: 'ID', dataIndex: 'id', key: 'id', width: 60, fixed: 'left',align:'center' },
     { title: '姓名', dataIndex: 'name', key: 'name', width: 120, fixed: 'left',align:'center' },
     { title: '学号', dataIndex: 'studentId', key: 'studentId', width: 120,align:'center' },
@@ -47,17 +51,28 @@ const AdminDashboard: React.FC = () => {
         </span>
       )
     },
+    { title: '操作', key: 'actionDelete', width: 80, align:'center', fixed: 'right',render: (_, record) => (
+        <Space size="middle">
+          {/* 当点击时，把这一行的 id 传给我们的删除函数 */}
+          <Button 
+            type="text" 
+            danger 
+            onClick={() => handleDelete(record.id)}
+          >
+            删除
+          </Button>
+        </Space>
+      )},
   ];
+ 
 
   // 加载数据的核心函数
-const loadData = async (page: number, size: number) => {
+  const loadData = async (page: number, size: number, keyword: string) => {
     setLoading(true);
     try {
-      // 这里的 res 实际上是拦截器脱壳后的业务对象
-      // 它包含了 { code, message, data: { Total, FormList } }
-      const res: any = await fetchRegistrationForms({ pageNo: page, pageSize: size });
+
+      const res: any = keyword.trim() ? await searchRegistrationForms({ keyWord: keyword, pageNo: page, pageSize: size }) : await fetchRegistrationForms({ pageNo: page, pageSize: size });
       
-      // 🌟 核心修正：从 res.data 中取出真实的字段名！
       const actualData = res.data; 
       
       if (actualData) {
@@ -77,8 +92,8 @@ const loadData = async (page: number, size: number) => {
 
   // 监听页码变化，自动拉取新数据
   useEffect(() => {
-    loadData(currentPage, pageSize);
-  }, [currentPage, pageSize]); // 当 currentPage 或 pageSize 改变时，重新触发
+    loadData(currentPage, pageSize, searchKeyword);
+  }, [currentPage, pageSize, searchKeyword]); // 当 currentPage 或 pageSize 或 searchKeyword 改变时，重新触发
 
 
   // 登出逻辑
@@ -92,6 +107,33 @@ const loadData = async (page: number, size: number) => {
         message.success('退出登录成功');
       },
     });
+  };
+
+  // 删除报名表逻辑
+  const handleDelete = (id: number) => {
+    confirm({
+      title: '确认删除这条报名表吗？',
+      content: '删除后无法恢复，请谨慎操作。',
+      okText: '确认删除',
+      okType: 'danger',
+      cancelText: '取消',
+      async onOk() {
+        try {
+          await deleteRegistrationForm(id);
+          message.success('删除成功！');
+          loadData(currentPage, pageSize, searchKeyword); 
+        } catch (error) {
+          // 拦截器会处理报错弹窗，这里 catch 住防止页面崩溃即可
+          console.error('删除失败', error);
+        }
+      },
+    });
+  };
+
+  // 模糊搜索逻辑
+  const handleSearch = (keyword: string) => {
+    loadData(currentPage, pageSize, keyword);
+    setSearchKeyword(keyword);
   };
 
   return (
@@ -121,7 +163,14 @@ const loadData = async (page: number, size: number) => {
             
             <div className="mb-4 flex justify-between items-center">
               <h3 className="text-lg font-semibold text-gray-800">最新报名列表</h3>
-              {/* ！！！这里预留给未来的“模糊搜索”输入框 */}
+              <Search
+                placeholder="请输入姓名"
+                allowClear // 允许一键清空输入框
+                enterButton="搜索" // 把右侧变成一个蓝色的搜索按钮
+                size="middle"
+                onSearch={(keyword) => handleSearch(keyword)}
+                style={{ width: 350 }}
+              />
             </div>
 
             {/* Antd 数据表格 */}
