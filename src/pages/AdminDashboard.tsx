@@ -137,7 +137,7 @@ const AdminDashboard: React.FC = () => {
   };
 
   return (
-    <Layout className="min-h-screen">
+    <Layout className="h-screen">
       
       {/* 左侧边栏 */}
       <Sider breakpoint="lg" collapsedWidth="0" className="bg-slate-900">
@@ -147,9 +147,9 @@ const AdminDashboard: React.FC = () => {
         <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']} className="bg-slate-900" items={[{ key: '1', icon: <UserOutlined />, label: '报名学生信息' }]} />
       </Sider>
 
-      <Layout className="flex flex-col">
+      <Layout className="flex-1 flex flex-col">
         {/* 右侧主体内容 */}
-        <Content className="flex-1 overflow-auto">
+        <Content className="flex-1 flex flex-col">
 
           {/* 右侧头部 */}
           <Header className="sticky top-0 z-10 h-16 px-6 bg-white flex justify-between items-center shadow-sm">
@@ -159,7 +159,7 @@ const AdminDashboard: React.FC = () => {
             </Button>
           </Header>          
           {/* 右侧内容 */}
-          <div className="p-6 h-full bg-white rounded-xl shadow-sm border border-gray-100">
+          <div className="flex-1 p-6 bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col">
             
             <div className="mb-4 flex justify-between items-center">
               <h3 className="text-lg font-semibold text-gray-800">最新报名列表</h3>
@@ -173,26 +173,28 @@ const AdminDashboard: React.FC = () => {
               />
             </div>
 
-            {/* Antd 数据表格 */}
-            <Table 
-              columns={columns} 
-              dataSource={FormList} 
-              rowKey="id" // 告诉表格用哪个字段作为 React 的 key
-              loading={loading} // 传入 loading 状态，Antd 会自动覆盖一个绝美的加载动画
-              scroll={{ x: 900 }} 
-              pagination={{
-                // 将 Antd 的分页器和我们自己的 State 绑定
-                current: currentPage,
-                pageSize: pageSize,
-                total: totalCount,
-                showSizeChanger: true, // 允许用户切换每页条数
-                // 当用户点击页码时触发
-                onChange: (page, size) => {
-                  setCurrentPage(page);
-                  setPageSize(size);
-                }
-              }}
-            />
+            {/* Antd 数据表格 - 仅表格部分可滚动 */}
+            <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 164px)' }}>
+              <Table 
+                columns={columns} 
+                dataSource={FormList} 
+                rowKey="id" // 告诉表格用哪个字段作为 React 的 key
+                loading={loading} // 传入 loading 状态，Antd 会自动覆盖一个绝美的加载动画
+                scroll={{ x: 900 }} 
+                pagination={{
+                  // 将 Antd 的分页器和我们自己的 State 绑定
+                  current: currentPage,
+                  pageSize: pageSize,
+                  total: totalCount,
+                  showSizeChanger: true, // 允许用户切换每页条数
+                  // 当用户点击页码时触发
+                  onChange: (page, size) => {
+                    setCurrentPage(page);
+                    setPageSize(size);
+                  }
+                }}
+              />
+            </div>
 
           </div>
         </Content>
