@@ -5,7 +5,7 @@ import EditModal from '../components/EditModal';
 import React, { useState, useEffect } from 'react';
 import { Layout, Menu, Button, Table, Modal, message, Space, Input } from 'antd';
 import type { ColumnsType } from 'antd/es/table'; // 引入 ColumnsType 类型，定义表格列的类型
-import { UserOutlined, LogoutOutlined, ExclamationCircleFilled } from '@ant-design/icons';
+import { UserOutlined, LogoutOutlined, ExclamationCircleFilled, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 const { Header, Sider, Content } = Layout;
@@ -62,7 +62,7 @@ const AdminDashboard: React.FC = () => {
           type="link" 
           onClick={() => handleEdit(record)}
         >
-          修改
+          <EditOutlined className="text-xl" />
         </Button>
         {/* 当点击时，把这一行的 id 传给我们的删除函数 */}
         <Button 
@@ -70,7 +70,7 @@ const AdminDashboard: React.FC = () => {
           danger 
           onClick={() => handleDelete(record.id)}
         >
-          删除
+          <DeleteOutlined className="text-xl" />
         </Button>
       </Space>
     )
