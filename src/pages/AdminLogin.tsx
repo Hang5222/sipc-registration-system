@@ -51,6 +51,9 @@ const AdminLogin: React.FC = () => {
             </Button>
           </Form.Item>
         </Form>
+        <Button type="link" onClick={() => navigate('/')} size="large" block>
+          返回
+        </Button>
       </Card>
     </div>
   )

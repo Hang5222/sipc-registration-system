@@ -112,6 +112,9 @@ const AdminDashboard: React.FC = () => {
   const handleLogout = () => {
     confirm({
       title: '确认退出登录吗？',
+      okText: '确认退出',
+      okType: 'danger',
+      cancelText: '取消',
       icon: <ExclamationCircleFilled />,
       onOk() {
         localStorage.removeItem('token');

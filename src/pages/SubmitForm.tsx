@@ -1,5 +1,6 @@
 // 基础引入
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import type { SubmitFormDTO } from '../api/form';
 import { submitForm } from '../api/form';
 import { majorData, organizationData } from '../utils/constants';
@@ -11,6 +12,8 @@ import { Form, Input, Cascader, Radio, Button, Card, message } from 'antd';
 const SubmitForm: React.FC = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  
   const onFinish = async (values: any) => {
     
     setLoading(true);
@@ -118,6 +121,9 @@ const SubmitForm: React.FC = () => {
             </Button>
           </Form.Item>
         </Form>
+        <Button type="link" onClick={() => navigate('/')} size="large" block>
+          返回
+        </Button>
       </Card>
     </div>
 
