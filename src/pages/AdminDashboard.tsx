@@ -1,5 +1,6 @@
 import { fetchRegistrationForms, deleteRegistrationForm, searchRegistrationForms } from '../api/admin';
 import type { RegistrationRecord } from '../api/admin';
+import EditModal from '../components/EditModal';
 
 import React, { useState, useEffect } from 'react';
 import { Layout, Menu, Button, Table, Modal, message, Space, Input } from 'antd';
@@ -15,6 +16,8 @@ const { Search } = Input;
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const[editingRecord, setEditingRecord] = useState<RegistrationRecord | null>(null);
   
   // 基本状态管理
   const [loading, setLoading] = useState(false);
@@ -30,10 +33,10 @@ const AdminDashboard: React.FC = () => {
   const columns: ColumnsType<RegistrationRecord> = [
     // dataIndex 是从 RegistrationRecord 中获取数据的字段名(与数据库字段名一致)
     { title: 'ID', dataIndex: 'id', key: 'id', width: 60, fixed: 'left',align:'center' },
-    { title: '姓名', dataIndex: 'name', key: 'name', width: 120, fixed: 'left',align:'center' },
-    { title: '学号', dataIndex: 'studentId', key: 'studentId', width: 120,align:'center' },
+    { title: '姓名', dataIndex: 'name', key: 'name', width: 100, fixed: 'left',align:'center' },
+    { title: '学号', dataIndex: 'studentId', key: 'studentId', width: 100,align:'center' },
     { title: '专业', dataIndex: 'major', key: 'major', width: 150,align:'center' },
-    { title: '班级', dataIndex: 'className', key: 'className', width: 120,align:'center' },
+    { title: '班级', dataIndex: 'className', key: 'className', width: 100,align:'center' },
     { title: '第一志愿', dataIndex: 'firstOrganizationName', key: 'firstOrganizationName', width: 120,align:'center' },
     { title: '第一部门', dataIndex: 'firstBranch', key: 'firstBranch', width: 120,align:'center' },
     { title: '第二志愿', dataIndex: 'secondOrganizationName', key: 'secondOrganizationName', width: 120,align:'center' },
@@ -51,18 +54,27 @@ const AdminDashboard: React.FC = () => {
         </span>
       )
     },
-    { title: '操作', key: 'actionDelete', width: 80, align:'center', fixed: 'right',render: (_, record) => (
-        <Space size="middle">
-          {/* 当点击时，把这一行的 id 传给我们的删除函数 */}
-          <Button 
-            type="text" 
-            danger 
-            onClick={() => handleDelete(record.id)}
-          >
-            删除
-          </Button>
-        </Space>
-      )},
+    
+    { title: '操作', key: 'actionDelete', width: 160, align:'center', fixed: 'right',render: (_, record) => (
+      <Space size="middle">
+        {/* 修改按钮 */}
+        <Button 
+          type="link" 
+          onClick={() => handleEdit(record)}
+        >
+          修改
+        </Button>
+        {/* 当点击时，把这一行的 id 传给我们的删除函数 */}
+        <Button 
+          type="text" 
+          danger 
+          onClick={() => handleDelete(record.id)}
+        >
+          删除
+        </Button>
+      </Space>
+    )
+    },
   ];
  
 
@@ -136,6 +148,12 @@ const AdminDashboard: React.FC = () => {
     setSearchKeyword(keyword);
   };
 
+  // 编辑修改报名表逻辑
+  const handleEdit = (record: RegistrationRecord) => {
+    setEditingRecord(record); // 把当前行数据存起来
+    setIsModalOpen(true);     // 打开弹窗
+  };
+
   return (
     <Layout className="h-screen">
       
@@ -195,7 +213,13 @@ const AdminDashboard: React.FC = () => {
                 }}
               />
             </div>
-
+            <EditModal 
+              open={isModalOpen}
+              record={editingRecord}
+              onCancel={() => setIsModalOpen(false)}
+              // 收到成功的通知后，重新拉取当前页数据
+              onSuccess={() => loadData(currentPage, pageSize, searchKeyword)} 
+            />
           </div>
         </Content>
       </Layout>

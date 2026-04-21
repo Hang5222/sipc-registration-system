@@ -57,7 +57,7 @@ const SubmitForm: React.FC = () => {
 
   return (
     <div className='flex justify-center py-4 min-h-screen bg-[#f0f2f5]'>
-      <Card title='学生组织报名系统' style={{ width: 700, textAlign: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+      <Card title='学生组织报名表' style={{ width: 700, textAlign: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
         <Form
           form={form}
           layout="vertical"
@@ -79,7 +79,7 @@ const SubmitForm: React.FC = () => {
           </Form.Item>   
           
           {/* 专业信息 */}
-          <Form.Item label="专业" name="major" rules={[{ required: true, message: '请选择专业!' }]}>
+          <Form.Item label="专业与班级" name="major" rules={[{ required: true, message: '请选择专业与班级!' }]}>
             <Cascader options={majorData} placeholder="请选择专业与班级" />
           </Form.Item>
 
