@@ -98,7 +98,30 @@ const SubmitForm: React.FC = () => {
 
           {/* 第二志愿信息 */}
           <Card type='inner' title='第二志愿信息' style={{ marginBottom: 16 }}>
-            <Form.Item label="第二志愿组织" name="secondOrgAndBranch" >
+            <Form.Item 
+              label="第二志愿组织" 
+              name="secondOrgAndBranch" 
+              // dependencies声明依赖：告诉 Antd，只要第一志愿变了，这个第二志愿也要跟着重新校验一次
+              dependencies={['firstOrgAndBranch']}
+              // 自定义rules函数限制第二志愿组织不能与第一志愿相同
+              rules={[
+                ({ getFieldValue }) => ({
+                  validator(_, value) {
+                    const firstOrg = getFieldValue('firstOrgAndBranch');
+                    // 如果第二志愿为空，直接通过验
+                    if (!value || value.length === 0) {
+                      return Promise.resolve();
+                    }
+                    // 如果第二志愿与第一志愿相同，提示错误
+                    // 注意：不能直接比较数组，因为地址不同。可使用 join('') 方法将数组转换为字符串来比较
+                    if (firstOrg && value.join('') === firstOrg.join('')) {
+                      return Promise.reject(new Error('第二志愿不能与第一志愿相同！'));
+                    }
+                    return Promise.resolve();
+                  },
+                }),
+              ]}
+            >
               <Cascader options={organizationData} placeholder="请选择第二志愿组织" />
             </Form.Item>
             <Form.Item label="加入理由" name="secondOrganizationReason" >

@@ -66,7 +66,7 @@ const AdminDashboard: React.FC = () => {
     },
   ];
 
-  // ... 加载数据、useEffect、搜索、登出、删除等逻辑函数保持不变 ...
+  // 加载表格数据核心函数
   const loadData = async (page: number, size: number, keyword: string) => {
     setLoading(true);
     try {
@@ -85,12 +85,24 @@ const AdminDashboard: React.FC = () => {
       setLoading(false);
     }
   };
+  // 根据变化调用loadData函数加载表格数据
+  useEffect(() => {
+    loadData(currentPage, pageSize, searchKeyword);
+  }, [currentPage, pageSize, searchKeyword]);
 
-  useEffect(() => { loadData(currentPage, pageSize, searchKeyword); }, [currentPage, pageSize, searchKeyword]);
+  // 处理模糊搜索操作
+  const handleSearch = (keyword: string) => {
+    setSearchKeyword(keyword);
+    setCurrentPage(1); // 搜索时，重置到第一页，防止搜索结果超出当前页范围返回空数组
+  };
 
-  const handleSearch = (keyword: string) => { setSearchKeyword(keyword); setCurrentPage(1); };
-  const handleEdit = (record: RegistrationRecord) => { setEditingRecord(record); setIsModalOpen(true); };
+  // 处理编辑操作
+  const handleEdit = (record: RegistrationRecord) => {
+    setEditingRecord(record);
+    setIsModalOpen(true);
+  };
 
+  // 处理删除操作
   const handleDelete = (id: number) => {
     confirm({
       title: '确认删除?',
@@ -108,6 +120,7 @@ const AdminDashboard: React.FC = () => {
     });
   };
 
+  // 处理退出登录操作
   const handleLogout = () => {
     confirm({
       title: '退出登录?',
@@ -116,16 +129,16 @@ const AdminDashboard: React.FC = () => {
       cancelText: '取消',
       onOk() {
         localStorage.removeItem('token');
-        navigate('/admin/login', { replace: true });
+        navigate('/admin/login', { replace: true }); // 退出登录后，重定向到登录页，清除当前页面历史记录，防止用户通过浏览器返回按钮返回当前页面
         message.success('已安全退出');
       },
     });
   };
 
   return (
-    // 外层容器：确保在移动端也能正常滚动
     <Layout className="h-screen overflow-hidden bg-[#f4f6f9]">
       
+      {/* 左侧边栏 */}
       <Sider breakpoint="lg" collapsedWidth="0" className="bg-[#001529] shadow-xl z-20">
         <div className="h-10 m-3 bg-white/10 rounded-lg flex items-center justify-center text-white font-black tracking-widest text-sm md:text-lg">
           SIPC
@@ -133,10 +146,9 @@ const AdminDashboard: React.FC = () => {
         <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']} className="bg-[#001529]" items={[{ key: '1', icon: <UserOutlined />, label: '学生报名管理' }]} />
       </Sider>
 
-      {/* 🌟 修复 flex 溢出问题：加入 min-w-0 */}
+      {/* 右侧内容区域 */}
       <Layout className="bg-[#f4f6f9] flex flex-col min-w-0">
         
-        {/* 头部：移动端减小 padding 和字体 */}
         <Header className="bg-white/80 backdrop-blur-md border-b border-gray-200 h-14 md:h-16 px-4 md:px-6 flex justify-between items-center shadow-sm z-10 shrink-0">
           <h2 className="m-0 text-base md:text-lg font-extrabold text-slate-700 tracking-wide truncate nowrap">学生信息控制台</h2>
           <Button type="text" danger icon={<LogoutOutlined />} onClick={handleLogout} className="font-semibold hover:bg-red-50 rounded-lg text-xs md:text-sm px-2 md:px-4">
@@ -144,11 +156,10 @@ const AdminDashboard: React.FC = () => {
           </Button>
         </Header>          
 
-        {/* 🌟 内容区：修复移动端被吃掉的分页器 */}
         <Content className="p-2 md:p-6 flex flex-col h-full overflow-hidden">
           <div className="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 flex flex-col flex-1 overflow-hidden">
             
-            {/* 表格工具栏：移动端改为纵向排列，减小边距 */}
+            {/* 标题和搜索框 */}
             <div className="p-3 md:p-5 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shrink-0">
               <h3 className="w-32 text-lg md:text-xl font-bold text-slate-800 m-0 border-l-4 border-blue-500 pl-2 md:pl-3">数据总览</h3>
               <Search
@@ -187,6 +198,7 @@ const AdminDashboard: React.FC = () => {
               />
             </div>
 
+            {/* 编辑弹窗 */}
             <EditModal 
               open={isModalOpen}
               record={editingRecord}
