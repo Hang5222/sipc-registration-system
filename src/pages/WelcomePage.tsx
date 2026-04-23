@@ -1,4 +1,3 @@
-// src/pages/WelcomePage.tsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserOutlined, SettingOutlined } from '@ant-design/icons'; 
