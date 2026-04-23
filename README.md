@@ -21,6 +21,7 @@
 *   路由管理： React Router DOM
 *   UI 样式： Ant Design, Tailwind CSS
 *   网络请求： Axios
+*   版本控制： Git + GitHub（远程仓库）
 
 ## 开发过程中的 AI 使用情况
 *   项目中 AI 主要用途为整体思路引导以及问答纠错（如：没有思路的地方，提供基础代码框架以及核心功能的TODO布置；做部分 Code Review）
