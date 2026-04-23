@@ -26,7 +26,7 @@ const WelcomePage: React.FC = () => {
           计算机科学与工程学院
         </h2>
         
-        <h1 className="text-5xl md:text-7xl lg:text-[5rem] font-black text-slate-800 tracking-tight text-center leading-tight mb-16">
+        <h1 className="text-4xl md:text-7xl lg:text-[5rem] font-black text-slate-800 tracking-tight text-center leading-tight mb-16">
           学生组织<span className="text-[#1963a6]">报名系统</span>
         </h1>
 
