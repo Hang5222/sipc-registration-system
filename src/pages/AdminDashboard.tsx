@@ -1,214 +1,184 @@
+import React, { useState, useEffect } from 'react';
+import { Layout, Menu, Button, Table, Modal, message, Space, Input } from 'antd';
+import type { ColumnsType } from 'antd/es/table'; 
+import { UserOutlined, LogoutOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
+
 import { fetchRegistrationForms, deleteRegistrationForm, searchRegistrationForms } from '../api/admin';
 import type { RegistrationRecord } from '../api/admin';
 import EditModal from '../components/EditModal';
-
-import React, { useState, useEffect } from 'react';
-import { Layout, Menu, Button, Table, Modal, message, Space, Input } from 'antd';
-import type { ColumnsType } from 'antd/es/table'; // 引入 ColumnsType 类型，定义表格列的类型
-import { UserOutlined, LogoutOutlined, ExclamationCircleFilled, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
 
 const { Header, Sider, Content } = Layout;
 const { confirm } = Modal;
 const { Search } = Input;
 
-
-
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const[editingRecord, setEditingRecord] = useState<RegistrationRecord | null>(null);
   
-  // 基本状态管理
+  // 状态管理
+
+  // 编辑弹窗状态管理
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<RegistrationRecord | null>(null);
+  // 表格状态管理
   const [loading, setLoading] = useState(false);
-  const[FormList, setFormList] = useState<RegistrationRecord[]>([]);
-  // 分页状态管理
+  const [FormList, setFormList] = useState<RegistrationRecord[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const[pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
-  // 搜索状态管理
   const [searchKeyword, setSearchKeyword] = useState('');
 
-  // 定义表格的列
-  const columns: ColumnsType<RegistrationRecord> = [
-    // dataIndex 是从 RegistrationRecord 中获取数据的字段名(与数据库字段名一致)
-    { title: 'ID', dataIndex: 'id', key: 'id', width: 60, fixed: 'left',align:'center' },
-    { title: '姓名', dataIndex: 'name', key: 'name', width: 100, fixed: 'left',align:'center' },
-    { title: '学号', dataIndex: 'studentId', key: 'studentId', width: 100,align:'center' },
-    { title: '专业', dataIndex: 'major', key: 'major', width: 150,align:'center' },
-    { title: '班级', dataIndex: 'className', key: 'className', width: 100,align:'center' },
-    { title: '第一志愿', dataIndex: 'firstOrganizationName', key: 'firstOrganizationName', width: 120,align:'center' },
-    { title: '第一部门', dataIndex: 'firstBranch', key: 'firstBranch', width: 120,align:'center' },
-    { title: '第二志愿', dataIndex: 'secondOrganizationName', key: 'secondOrganizationName', width: 120,align:'center' },
-    { title: '第二部门', dataIndex: 'secondBranch', key: 'secondBranch', width: 120,align:'center' },
+  // 定义列的形状
+  const columns: ColumnsType<RegistrationRecord> =[
+    { title: 'ID', dataIndex: 'id', key: 'id', width: 60, fixed: 'left', align: 'center' },
+    { title: '姓名', dataIndex: 'name', key: 'name', width: 80, fixed: 'left', align: 'center' },
+    { title: '学号', dataIndex: 'studentId', key: 'studentId', width: 100, align: 'center' },
+    { title: '专业', dataIndex: 'major', key: 'major', width: 140, align: 'center' },
+    { title: '班级', dataIndex: 'className', key: 'className', width: 90, align: 'center' },
+    { title: '第一志愿', dataIndex: 'firstOrganizationName', key: 'firstOrganizationName', width: 120, align: 'center' },
+    { title: '第一部门', dataIndex: 'firstBranch', key: 'firstBranch', width: 100, align: 'center' },
+    { title: '第二志愿', dataIndex: 'secondOrganizationName', key: 'secondOrganizationName', width: 120, align: 'center' },
+    { title: '第二部门', dataIndex: 'secondBranch', key: 'secondBranch', width: 100, align: 'center' },
     { 
       title: '调剂', 
       dataIndex: 'isDispensing', 
       key: 'isDispensing', 
-      width: 80,
-      align:'center',
-      // 把布尔值变成标签icon
+      width: 70,
+      align: 'center',
       render: (text: boolean) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-bold ${text ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+        <span className={`px-2 py-1 rounded-md text-[10px] md:text-xs font-bold ${text ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
           {text ? '是' : '否'}
         </span>
       )
     },
-    
-    { title: '操作', key: 'actionDelete', width: 160, align:'center', fixed: 'right',render: (_, record) => (
-      <Space size="middle">
-        {/* 修改按钮 */}
-        <Button 
-          type="link" 
-          onClick={() => handleEdit(record)}
-        >
-          <EditOutlined className="text-xl" />
-        </Button>
-        {/* 当点击时，把这一行的 id 传给我们的删除函数 */}
-        <Button 
-          type="text" 
-          danger 
-          onClick={() => handleDelete(record.id)}
-        >
-          <DeleteOutlined className="text-xl" />
-        </Button>
-      </Space>
-    )
+    { 
+      title: '操作', 
+      key: 'actionDelete', 
+      width: 100, 
+      align: 'center', 
+      fixed: 'right',
+      render: (_, record) => (
+        <Space size="small">
+          <Button type="text" size="small" className="text-blue-500 hover:bg-blue-50 px-1" icon={<EditOutlined />} onClick={() => handleEdit(record)} />
+          <Button type="text" size="small" danger className="hover:bg-red-50 px-1" icon={<DeleteOutlined />} onClick={() => handleDelete(record.id)} />
+        </Space>
+      )
     },
   ];
- 
 
-  // 加载数据的核心函数
+  // ... 加载数据、useEffect、搜索、登出、删除等逻辑函数保持不变 ...
   const loadData = async (page: number, size: number, keyword: string) => {
     setLoading(true);
     try {
-
-      const res: any = keyword.trim() ? await searchRegistrationForms({ keyWord: keyword, pageNo: page, pageSize: size }) : await fetchRegistrationForms({ pageNo: page, pageSize: size });
+      const res: any = keyword.trim() 
+        ? await searchRegistrationForms({ keyWord: keyword, pageNo: page, pageSize: size }) 
+        : await fetchRegistrationForms({ pageNo: page, pageSize: size });
       
       const actualData = res.data; 
-      
       if (actualData) {
-        // 使用 || [] 防止 FormList 不存在时报错
-        setFormList(actualData.FormList || []); 
-        // 使用 ?? 0 防止 Total 为 null 或 undefined
+        setFormList(actualData.FormList ||[]); 
         setTotalCount(actualData.Total ?? 0); 
       }
-      
     } catch (error) {
-      // 这里的错误已经在拦截器里弹窗了，我们只在控制台打印
       console.error('获取表格数据失败:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  // 监听页码变化，自动拉取新数据
-  useEffect(() => {
-    loadData(currentPage, pageSize, searchKeyword);
-  }, [currentPage, pageSize, searchKeyword]); // 当 currentPage 或 pageSize 或 searchKeyword 改变时，重新触发
+  useEffect(() => { loadData(currentPage, pageSize, searchKeyword); }, [currentPage, pageSize, searchKeyword]);
 
+  const handleSearch = (keyword: string) => { setSearchKeyword(keyword); setCurrentPage(1); };
+  const handleEdit = (record: RegistrationRecord) => { setEditingRecord(record); setIsModalOpen(true); };
 
-  // 登出逻辑
-  const handleLogout = () => {
-    confirm({
-      title: '确认退出登录吗？',
-      okText: '确认退出',
-      okType: 'danger',
-      cancelText: '取消',
-      icon: <ExclamationCircleFilled />,
-      onOk() {
-        localStorage.removeItem('token');
-        navigate('/admin/login', { replace: true }); // 退出登录后，跳转到登录页，替换当前路由(避免通过回退返回当前页)
-        message.success('退出登录成功');
-      },
-    });
-  };
-
-  // 删除报名表逻辑
   const handleDelete = (id: number) => {
     confirm({
-      title: '确认删除这条报名表吗？',
-      content: '删除后无法恢复，请谨慎操作。',
-      okText: '确认删除',
+      title: '确认删除?',
+      content: '删除后相关数据无法恢复。',
+      okText: '删除',
       okType: 'danger',
       cancelText: '取消',
-      async onOk() {
+      onOk: async () => {
         try {
           await deleteRegistrationForm(id);
           message.success('删除成功！');
-          loadData(currentPage, pageSize, searchKeyword); 
-        } catch (error) {
-          // 拦截器会处理报错弹窗，这里 catch 住防止页面崩溃即可
-          console.error('删除失败', error);
-        }
+          loadData(currentPage, pageSize, searchKeyword);
+        } catch (error) { console.error('删除失败', error); }
       },
     });
   };
 
-  // 模糊搜索逻辑
-  const handleSearch = (keyword: string) => {
-    setSearchKeyword(keyword); // 有useEffect监听，改变keyword会自动触发请求
-    setCurrentPage(1); // 强制回到第一页,避免页数错误返回空数组
-   };
-
-  // 编辑修改报名表逻辑
-  const handleEdit = (record: RegistrationRecord) => {
-    setEditingRecord(record); // 把当前行数据存起来
-    setIsModalOpen(true);     // 打开弹窗
+  const handleLogout = () => {
+    confirm({
+      title: '退出登录?',
+      okText: '退出',
+      okType: 'danger',
+      cancelText: '取消',
+      onOk() {
+        localStorage.removeItem('token');
+        navigate('/admin/login', { replace: true });
+        message.success('已安全退出');
+      },
+    });
   };
 
   return (
-    <Layout className="h-screen">
+    // 外层容器：确保在移动端也能正常滚动
+    <Layout className="h-screen overflow-hidden bg-[#f4f6f9]">
       
-      {/* 左侧边栏 */}
-      <Sider breakpoint="lg" collapsedWidth="0" className="bg-slate-900">
-        <div className="h-8 m-4 bg-white/20 rounded-md flex items-center justify-center text-white font-bold tracking-wider">
-          SIPC ADMIN
+      <Sider breakpoint="lg" collapsedWidth="0" className="bg-[#001529] shadow-xl z-20">
+        <div className="h-10 m-3 bg-white/10 rounded-lg flex items-center justify-center text-white font-black tracking-widest text-sm md:text-lg">
+          SIPC
         </div>
-        <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']} className="bg-slate-900" items={[{ key: '1', icon: <UserOutlined />, label: '报名学生信息' }]} />
+        <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']} className="bg-[#001529]" items={[{ key: '1', icon: <UserOutlined />, label: '学生报名管理' }]} />
       </Sider>
 
-      <Layout className="flex-1 flex flex-col">
-        {/* 右侧主体内容 */}
-        <Content className="flex-1 flex flex-col">
+      {/* 🌟 修复 flex 溢出问题：加入 min-w-0 */}
+      <Layout className="bg-[#f4f6f9] flex flex-col min-w-0">
+        
+        {/* 头部：移动端减小 padding 和字体 */}
+        <Header className="bg-white/80 backdrop-blur-md border-b border-gray-200 h-14 md:h-16 px-4 md:px-6 flex justify-between items-center shadow-sm z-10 shrink-0">
+          <h2 className="m-0 text-base md:text-lg font-extrabold text-slate-700 tracking-wide truncate nowrap">学生信息控制台</h2>
+          <Button type="text" danger icon={<LogoutOutlined />} onClick={handleLogout} className="font-semibold hover:bg-red-50 rounded-lg text-xs md:text-sm px-2 md:px-4">
+             <span className="hidden sm:inline">退出系统</span>
+          </Button>
+        </Header>          
 
-          {/* 右侧头部 */}
-          <Header className="sticky top-0 z-10 h-16 px-6 bg-white flex justify-between items-center shadow-sm">
-            <h2 className="m-0 text-lg font-bold text-gray-700">学生信息管理</h2>
-            <Button type="text" danger icon={<LogoutOutlined />} onClick={handleLogout} className="font-medium hover:bg-red-50">
-              退出登录
-            </Button>
-          </Header>          
-          {/* 右侧内容 */}
-          <div className="flex-1 p-6 bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col">
+        {/* 🌟 内容区：修复移动端被吃掉的分页器 */}
+        <Content className="p-2 md:p-6 flex flex-col h-full overflow-hidden">
+          <div className="bg-white rounded-xl md:rounded-2xl shadow-sm border border-gray-100 flex flex-col flex-1 overflow-hidden">
             
-            <div className="mb-4 flex justify-between items-center">
-              <h3 className="text-lg font-semibold text-gray-800">最新报名列表</h3>
+            {/* 表格工具栏：移动端改为纵向排列，减小边距 */}
+            <div className="p-3 md:p-5 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shrink-0">
+              <h3 className="w-32 text-lg md:text-xl font-bold text-slate-800 m-0 border-l-4 border-blue-500 pl-2 md:pl-3">数据总览</h3>
               <Search
-                placeholder="请输入姓名"
-                allowClear // 允许一键清空输入框
-                enterButton="搜索" // 把右侧变成一个蓝色的搜索按钮
-                size="middle"
-                onSearch={(keyword) => handleSearch(keyword)}
-                style={{ width: 350 }}
+                placeholder="输入关键字搜索..."
+                allowClear
+                enterButton={<Button type="primary" className="bg-blue-500">检索</Button>}
+                size="large"
+                onSearch={handleSearch}
+                className="w-full sm:w-80 shadow-sm"
               />
             </div>
 
-            {/* Antd 数据表格 - 仅表格部分可滚动 */}
-            <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 164px)' }}>
+            {/* 表格主体 */}
+            <div className="flex-1 overflow-auto p-2 md:p-4 pt-0">
               <Table 
                 columns={columns} 
                 dataSource={FormList} 
-                rowKey="id" // 告诉表格用哪个字段作为 React 的 key
-                loading={loading} // 传入 loading 状态，Antd 会自动覆盖一个绝美的加载动画
-                scroll={{ x: 900 }} 
+                rowKey="id" 
+                loading={loading}
+                size="medium" 
+                // scroll x 设为 max-content，保证在手机上也能完整横向滑动展示
+                scroll={{ x: 'max-content' }} 
+                className="custom-table"
                 pagination={{
-                  // 将 Antd 的分页器和我们自己的 State 绑定
                   current: currentPage,
                   pageSize: pageSize,
                   total: totalCount,
-                  showSizeChanger: true, // 允许用户切换每页条数
-                  // 当用户点击页码时触发
+                  showSizeChanger: true,
+                  size: "middle", 
+                  showTotal: (total) => <span className="hidden sm:inline">共 {total} 条</span>, // 移动端隐藏总条数，省空间
                   onChange: (page, size) => {
                     setCurrentPage(page);
                     setPageSize(size);
@@ -216,13 +186,14 @@ const AdminDashboard: React.FC = () => {
                 }}
               />
             </div>
+
             <EditModal 
               open={isModalOpen}
               record={editingRecord}
               onCancel={() => setIsModalOpen(false)}
-              // 收到成功的通知后，重新拉取当前页数据
               onSuccess={() => loadData(currentPage, pageSize, searchKeyword)} 
             />
+
           </div>
         </Content>
       </Layout>
