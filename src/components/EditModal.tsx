@@ -104,7 +104,27 @@ const EditModal: React.FC<EditModalProps> = ({ open, onCancel, onSuccess, record
           <Input />
         </Form.Item>
         {/* 第二志愿信息 */}
-        <Form.Item label="第二志愿" name="secondOrgAndBranch">
+        <Form.Item label="第二志愿" name="secondOrgAndBranch"
+          dependencies={['firstOrgAndBranch']}
+          // 自定义rules函数限制第二志愿组织不能与第一志愿相同
+          rules={[
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                const firstOrg = getFieldValue('firstOrgAndBranch');
+                // 如果第二志愿为空，直接通过验
+                if (!value || value.length === 0) {
+                   return Promise.resolve();
+                }
+                // 如果第二志愿与第一志愿相同，提示错误
+                // 注意：不能直接比较数组，因为地址不同。可使用 join('') 方法将数组转换为字符串来比较
+                if (firstOrg && value.join('') === firstOrg.join('')) {
+                  return Promise.reject(new Error('第二志愿不能与第一志愿相同！'));
+                }
+                return Promise.resolve();
+              },
+             }),
+           ]}
+        >
           <Cascader options={organizationData} placeholder="请选择第二志愿" />
         </Form.Item>
         <Form.Item label="第二志愿原因" name="secondOrganizationReason">
