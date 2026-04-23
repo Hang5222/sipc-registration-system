@@ -147,9 +147,9 @@ const AdminDashboard: React.FC = () => {
 
   // 模糊搜索逻辑
   const handleSearch = (keyword: string) => {
-    loadData(currentPage, pageSize, keyword);
-    setSearchKeyword(keyword);
-  };
+    setSearchKeyword(keyword); // 有useEffect监听，改变keyword会自动触发请求
+    setCurrentPage(1); // 强制回到第一页,避免页数错误返回空数组
+   };
 
   // 编辑修改报名表逻辑
   const handleEdit = (record: RegistrationRecord) => {
