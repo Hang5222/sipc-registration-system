@@ -68,18 +68,49 @@ const SubmitForm: React.FC = () => {
           initialValues={{isDispensing: true}}
         >
           {/* 基本信息 */}
-          <Form.Item label="学号" name="studentId" rules={[{ required: true, message: '请输入学号!' }]}>
+          <Form.Item
+            label="学号"
+            name="studentId"
+            rules={[
+              { required: true, message: '请输入学号!' },
+              { pattern: /^\d{8}$/, message: '请输入8位数字学号!' },
+            ]}
+          >
             <Input placeholder="请输入学号" />
           </Form.Item>
-          <Form.Item label="姓名" name="name" rules={[{ required: true, message: '请输入姓名!' }]}>
+
+          <Form.Item
+            label="姓名"
+            name="name"
+            rules={[
+              { required: true, message: '请输入姓名!' },
+              { pattern: /^[\u4e00-\u9fa5]{2,10}$/, message: '姓名必须为2-10个中文字符!' } // [\u4e00-\u9fa5] Unicode 表示所有中文字符
+            ]}
+          >
             <Input placeholder="请输入姓名" />
           </Form.Item>
-          <Form.Item label="QQ号" name="qqNumber" rules={[{ required: true, message: '请输入QQ号!' }]}>
+
+          <Form.Item
+            label="QQ号"
+            name="qqNumber"
+            rules={[
+              { required: true, message: '请输入QQ号!' },
+              { pattern: /^\d{5,10}$/, message: '请输入5-10位数字QQ号!' }
+            ]}
+          >
             <Input placeholder="请输入QQ号" />
           </Form.Item>
-          <Form.Item label="手机号" name="phoneNumber" rules={[{ required: true, message: '请输入手机号!' }]}>
+
+          <Form.Item
+            label="手机号"
+            name="phoneNumber"
+            rules={[
+              { required: true, message: '请输入手机号!' },
+              { pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号!' }
+            ]}
+          >
             <Input placeholder="请输入手机号" />
-          </Form.Item>   
+          </Form.Item>
           
           {/* 专业信息 */}
           <Form.Item label="专业与班级" name="major" rules={[{ required: true, message: '请选择专业与班级!' }]}>

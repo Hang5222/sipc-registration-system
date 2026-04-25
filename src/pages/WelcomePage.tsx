@@ -49,7 +49,7 @@ const WelcomePage: React.FC = () => {
             className="group flex items-center justify-center h-16 sm:h-18 px-10 sm:px-14 bg-white text-[#1963a6] border-2 border-slate-200 hover:border-[#1963a6] rounded-xl text-lg sm:text-xl font-bold shadow-sm hover:bg-[#f8fbff] hover:-translate-y-1 transition-all duration-300"
           >
             <SafetyCertificateOutlined className="mr-3 text-2xl text-slate-400 group-hover:text-[#1963a6] transition-colors" />
-            <span>管理员后台</span>
+            <span>管理员后台入口</span>
           </button>
 
         </div>

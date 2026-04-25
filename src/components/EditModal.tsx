@@ -78,29 +78,52 @@ const EditModal: React.FC<EditModalProps> = ({ open, onCancel, onSuccess, record
       destroyOnClose
     >
       <Form form={form} layout="vertical">
-        <Form.Item label="学号(唯一标识 不可修改)" name="studentId">
+        <Form.Item label="学号(唯一标识 不可修改)" name="studentId"
+          rules={[
+            { required: true, message: '请输入学号!' },
+            { pattern: /^\d{8}$/, message: '请输入8位数字学号!' },
+          ]}
+        >
           <Input disabled />
         </Form.Item>
-        <Form.Item label="姓名" name="name">
+        <Form.Item label="姓名" name="name"
+          rules={[
+            { required: true, message: '请输入姓名!' },
+            { pattern: /^[\u4e00-\u9fa5]{2,10}$/, message: '姓名必须为2-10个中文字符!' },
+          ]}
+        >
           <Input />
         </Form.Item>
-        <Form.Item label="QQ号" name="qqNumber">
+        <Form.Item label="QQ号" name="qqNumber"
+          rules={[
+            { required: true, message: '请输入QQ号!' },
+            { pattern: /^\d{5,10}$/, message: '请输入5-10位数字QQ号!' }
+          ]}
+        >
           <Input />
         </Form.Item>
-        <Form.Item label="手机号" name="phoneNumber">
+        <Form.Item label="手机号" name="phoneNumber"
+          rules={[
+            { required: true, message: '请输入手机号!' },
+            { pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号!' }
+          ]}
+        >
           <Input />
         </Form.Item>
-        <Form.Item label="专业" name="majorAndClass">
+        <Form.Item label="专业与班级" name="majorAndClass"
+          rules={[{ required: true, message: '请选择专业与班级!' }]}
+        >
           <Cascader options={majorData} />
         </Form.Item>
-        <Form.Item label="专业与班级" name="major" rules={[{ required: true, message: '请选择专业与班级!' }]}>
-          <Cascader options={majorData} placeholder="请选择专业与班级" />
-        </Form.Item>
         {/* 第一志愿信息 */}
-        <Form.Item label="第一志愿" name="firstOrgAndBranch">
+        <Form.Item label="第一志愿" name="firstOrgAndBranch"
+          rules={[{ required: true, message: '请选择第一志愿!' }]}
+        >
           <Cascader options={organizationData} placeholder="请选择第一志愿" />
         </Form.Item>
-        <Form.Item label="第一志愿原因" name="firstOrganizationReason">
+        <Form.Item label="第一志愿原因" name="firstOrganizationReason"
+          rules={[{ required: true, message: '请输入第一志愿原因!' }]}
+        >
           <Input />
         </Form.Item>
         {/* 第二志愿信息 */}
@@ -131,7 +154,9 @@ const EditModal: React.FC<EditModalProps> = ({ open, onCancel, onSuccess, record
           <Input />
         </Form.Item>
         {/* 是否调剂 */}
-          <Form.Item label="是否服从调剂" name="isDispensing" style={{ textAlign: 'left' }}>
+          <Form.Item label="是否服从调剂" name="isDispensing" style={{ textAlign: 'left' }}
+            rules={[{ required: true, message: '请选择是否服从调剂!' }]}
+          >
             <Radio.Group>
               <Radio value={true}>是</Radio>
               <Radio value={false}>否</Radio>

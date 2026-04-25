@@ -163,7 +163,7 @@ const AdminDashboard: React.FC = () => {
             <div className="p-3 md:p-5 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shrink-0">
               <h3 className="w-32 text-lg md:text-xl font-bold text-slate-800 m-0 border-l-4 border-blue-500 pl-2 md:pl-3">数据总览</h3>
               <Search
-                placeholder="输入关键字搜索..."
+                placeholder="输入关键字搜索姓名..."
                 allowClear
                 enterButton={<Button type="primary" className="bg-blue-500">检索</Button>}
                 size="large"
