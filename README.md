@@ -13,6 +13,7 @@
 ### B 端：管理控制台
 *   安全鉴权机制：实现登录 Token 拦截与存储；登出清除 Token 并重定向至登录页，防止用户利用浏览器回退重回后台。同时配合 Axios 拦截器，实现自动化鉴权以及Token 过期错误处理
 *   UI 与 响应式布局：基于 Ant Design 组件库和部分 Tailwind CSS 构建响应式布局，支持移动端/PC端。
+*   路由守卫：实现前端路由权限控制，通过 ProtectedRoute 组件包裹需要保护的页面（如 AdminDashboard），检测 localStorage 中的 Token 是否存在。未登录用户直接访问受保护路由时，自动弹出提示并重定向至登录页，防止通过 URL 直接进入后台。
 
 ## 技术栈
 *   核心框架： React
