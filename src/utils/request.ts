@@ -1,5 +1,5 @@
 import axios from "axios";
-import { message } from "antd";
+import { message, Modal } from "antd";
 
 // 拦截器
 // 创建axios实例
@@ -33,7 +33,30 @@ request.interceptors.response.use(
     // res.code业务状态码判断
     // 成功
     if (res.code === '200' || res.code === 200) {
+      // 处理token错误，登录过期情况
+      // 后端token错误也返回200
+      if (res.message && (
+        res.message.includes('token错误') || 
+        res.message.includes('未登录') ||
+        res.message.includes('登录过期')
+      )) {
+        localStorage.removeItem('token');
+        
+        Modal.error({
+          title: '登录已过期',
+          content: '您的登录状态已失效，请重新登录',
+          okText: '去登录',
+          onOk: () => {
+            window.location.href = '/admin/login';
+          },
+        });
+        
+        return Promise.reject(new Error(res.message));
+      }      
+
+      // 成功则正常返回数据
       return res
+      
     }
     // 失败
     if (res.code === 'A0400') {
@@ -51,7 +74,7 @@ request.interceptors.response.use(
   (error) => {
     // 处理http错误
     if (error.response) {
-       message.error(`网络请求错误: HTTP ${error.response.status}`);
+      message.error(`网络请求错误: HTTP ${error.response.status}`);
     } else if (error.request) {
       message.error('网络连接失败，请检查网络设置或稍后重试');
     } else {
