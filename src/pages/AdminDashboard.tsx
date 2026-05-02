@@ -22,7 +22,7 @@ const AdminDashboard: React.FC = () => {
   const [editingRecord, setEditingRecord] = useState<RegistrationRecord | null>(null);
   // 表格状态管理
   const [loading, setLoading] = useState(false);
-  const [FormList, setFormList] = useState<RegistrationRecord[]>([]);
+  const [records, setRecords] = useState<RegistrationRecord[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
@@ -76,7 +76,7 @@ const AdminDashboard: React.FC = () => {
       
       const actualData = res.data; 
       if (actualData) {
-        setFormList(actualData.FormList ||[]); 
+        setRecords(actualData.FormList ||[]); 
         setTotalCount(actualData.Total ?? 0); 
       }
     } catch (error) {
@@ -176,7 +176,7 @@ const AdminDashboard: React.FC = () => {
             <div className="flex-1 overflow-auto p-2 md:p-4 pt-0">
               <Table 
                 columns={columns} 
-                dataSource={FormList} 
+                dataSource={records} 
                 rowKey="id" 
                 loading={loading}
                 size="medium" 

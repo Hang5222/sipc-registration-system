@@ -139,8 +139,8 @@ const EditModal: React.FC<EditModalProps> = ({ open, onCancel, onSuccess, record
                    return Promise.resolve();
                 }
                 // 如果第二志愿与第一志愿相同，提示错误
-                // 注意：不能直接比较数组，因为地址不同。可使用 join('') 方法将数组转换为字符串来比较
-                if (firstOrg && value.join('') === firstOrg.join('')) {
+                // 注意：不能直接比较数组，因为地址不同。可使用 JSON.stringify() 将数组转换为字符串来比较
+                if (firstOrg && JSON.stringify(value) === JSON.stringify(firstOrg)) {
                   return Promise.reject(new Error('第二志愿不能与第一志愿相同！'));
                 }
                 return Promise.resolve();
